@@ -23,7 +23,6 @@ public class TimeServlet extends HttpServlet {
 
         ZoneId zoneId;
         try {
-            // Використовуємо переданий параметр timezone, або UTC за замовчуванням
             zoneId = (timezone != null && !timezone.isEmpty()) ? ZoneId.of(timezone) : ZoneId.of("UTC");
         } catch (Exception e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid timezone");
