@@ -2,7 +2,6 @@ package org.example;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,20 +21,9 @@ public class TimeServlet extends HttpServlet {
 
         String timezone = req.getParameter("timezone");
 
-        if (timezone == null || timezone.isEmpty()) {
-            Cookie[] cookies = req.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if ("lastTimezone".equals(cookie.getName())) {
-                        timezone = cookie.getValue();
-                        break;
-                    }
-                }
-            }
-        }
-
         ZoneId zoneId;
         try {
+            // Використовуємо переданий параметр timezone, або UTC за замовчуванням
             zoneId = (timezone != null && !timezone.isEmpty()) ? ZoneId.of(timezone) : ZoneId.of("UTC");
         } catch (Exception e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid timezone");
@@ -45,13 +33,9 @@ public class TimeServlet extends HttpServlet {
         ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneId);
         String formattedTime = zonedDateTime.format(formatter);
 
-        Cookie cookie = new Cookie("lastTimezone", zoneId.toString());
-        resp.addCookie(cookie);
-
         req.setAttribute("currentTime", formattedTime);
         req.setAttribute("timezone", zoneId.toString());
 
-        req.getRequestDispatcher("index.jsp").forward(req, resp);
+        req.getRequestDispatcher("/index.jsp").forward(req, resp);
     }
 }
-
