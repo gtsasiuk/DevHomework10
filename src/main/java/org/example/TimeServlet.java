@@ -37,6 +37,18 @@ public class TimeServlet extends HttpServlet {
 
         String timezone = req.getParameter("timezone");
 
+        if (timezone == null || timezone.isEmpty()) {
+            Cookie[] cookies = req.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("lastTimezone".equals(cookie.getName())) {
+                        timezone = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
         ZoneId zoneId;
         try {
             zoneId = (timezone != null && !timezone.isEmpty()) ? ZoneId.of(timezone) : ZoneId.of("UTC");
